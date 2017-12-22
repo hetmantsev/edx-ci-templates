@@ -19,6 +19,8 @@ ENV PATH="/usr/local/bin:${PATH}"
 RUN pip install setuptools==24.0.3
 RUN pip install virtualenv==15.0.2
 
+RUN /usr/local/bin/virtualenv /tmp/bootstrap
+
 ENV PATH="/tmp/bootstrap/bin:${PATH}"
 
 RUN git clone https://github.com/raccoongang/configuration.git /tmp/configuration && cd /tmp/configuration && git checkout ficus-rg && git pull
