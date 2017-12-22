@@ -24,7 +24,7 @@ RUN /usr/local/bin/virtualenv /tmp/bootstrap
 ENV PATH="/tmp/bootstrap/bin:${PATH}"
 
 RUN git clone https://github.com/raccoongang/configuration.git /tmp/configuration && cd /tmp/configuration \
-    && git checkout ficus-rg && git pull && make requirements
+    && git checkout test-ficus-rg && git pull && make requirements
 
 RUN /tmp/bootstrap/bin/ansible-playbook /tmp/configuration/playbooks/edx-east/edx_ansible.yml -i '127.0.0.1,' \
     -c local -e "configuration_version=ficus-rg" -e "edx_ansible_source_repo=https://github.com/raccoongang/configuration.git"
