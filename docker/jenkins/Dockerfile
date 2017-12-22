@@ -1,7 +1,5 @@
 FROM ubuntu:16.04
 
-USER root
-
 RUN apt-get update -y
 RUN apt-get upgrade -y
 
@@ -26,9 +24,9 @@ ENV PATH="/tmp/bootstrap/bin:${PATH}"
 RUN git clone https://github.com/python-squad/configuration.git /tmp/configuration && cd /tmp/configuration \
     && git checkout test-ficus-rg && git pull && make requirements
 
-RUN /tmp/bootstrap/bin/ansible-playbook /tmp/configuration/playbooks/edx-east/edx_ansible.yml -i '127.0.0.1,' \
+RUN /tmp/bootstrap/bin/ansible-playbook /tmp/configuration/playbooks/edx-east/edx_ansible.yml -i 'localhost,' \
     -c local -e "configuration_version=ficus-rg" -e "edx_ansible_source_repo=https://github.com/python-squad/configuration.git"
-RUN /tmp/bootstrap/bin/ansible-playbook /tmp/configuration/playbooks/edx-east/jenkins_worker.yml -i '127.0.0.1,' \
+RUN /tmp/bootstrap/bin/ansible-playbook /tmp/configuration/playbooks/edx-east/jenkins_worker.yml -i 'localhost,' \
     -c local
 
 RUN rm -rf /tmp/ansible
