@@ -21,10 +21,7 @@ RUN pip install virtualenv==15.0.2
 
 ENV PATH="/tmp/bootstrap/bin:${PATH}"
 
-RUN git clone https://github.com/raccoongang/configuration.git /tmp/configuration
-RUN cd /tmp/configuration
-RUN git checkout ficus-rg
-RUN git pull
+RUN git clone https://github.com/raccoongang/configuration.git /tmp/configuration && cd /tmp/configuration && git checkout ficus-rg && git pull
 RUN make requirements
 RUN pip install -r requirements.txt
 
