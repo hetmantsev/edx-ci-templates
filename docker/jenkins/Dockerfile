@@ -23,8 +23,8 @@ RUN /usr/local/bin/virtualenv /tmp/bootstrap
 
 ENV PATH="/tmp/bootstrap/bin:${PATH}"
 
-RUN git clone https://github.com/raccoongang/configuration.git /tmp/configuration && cd /tmp/configuration && git checkout ficus-rg && git pull
-RUN make requirements
+RUN git clone https://github.com/raccoongang/configuration.git /tmp/configuration && cd /tmp/configuration \
+    && git checkout ficus-rg && git pull && make requirements
 RUN pip install -r requirements.txt
 
 RUN cd /tmp/configuration/playbooks/edx-east
