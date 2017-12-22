@@ -25,7 +25,7 @@ ENV PATH="/tmp/bootstrap/bin:${PATH}"
 
 RUN git clone https://github.com/raccoongang/configuration.git /tmp/configuration && cd /tmp/configuration \
     && git checkout ficus-rg && git pull && make requirements
-RUN pip install -r requirements.txt
+RUN pip install -r /tmp/configuration/requirements.txt
 
 RUN cd /tmp/configuration/playbooks/edx-east
 RUN /tmp/bootstrap/bin/ansible-playbook edx_ansible.yml -i '127.0.0.1,' -c local -e "configuration_version=ficus-rg" -e "edx_ansible_source_repo=https://github.com/raccoongang/configuration.git"
