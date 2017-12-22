@@ -8,7 +8,7 @@ RUN apt-get upgrade -y
 RUN apt-get install -y software-properties-common python-software-properties apt-utils
 RUN add-apt-repository -y ppa:git-core/ppa
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
-RUN apt-get install -y python2.7 python2.7-dev python-pip python-apt python-yaml \
+RUN apt-get install -y python2.7 python2.7-dev python-pip python-apt python-yaml openssh-server\
     python-jinja2 build-essential sudo git-core libmysqlclient-dev libffi-dev libssl-dev \
     curl libxml2-dev libxslt1-dev python-dev libxmlsec1-dev libfreetype6-dev swig gcc g++
 
