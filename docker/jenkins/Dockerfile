@@ -2,6 +2,9 @@ FROM ubuntu:16.04
 
 USER root
 
+RUN apt-get update -y
+RUN apt-get upgrade -y
+
 RUN apt-get install -y software-properties-common python-software-properties
 RUN add-apt-repository -y ppa:git-core/ppa
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
