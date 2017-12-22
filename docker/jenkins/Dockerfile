@@ -5,7 +5,7 @@ USER root
 RUN apt-get update -y
 RUN apt-get upgrade -y
 
-RUN apt-get install -y software-properties-common python-software-properties
+RUN apt-get install -y software-properties-common python-software-properties apt-utils
 RUN add-apt-repository -y ppa:git-core/ppa
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test
 RUN apt-get install -y python2.7 python2.7-dev python-pip python-apt python-yaml \
