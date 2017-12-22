@@ -1,7 +1,5 @@
 FROM ubuntu:16.04
 
-USER root
-
 RUN apt-get update -y
 RUN apt-get upgrade -y
 
