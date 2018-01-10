@@ -64,12 +64,6 @@ def buildParallelSteps() {
   return parallelSteps
 }
 
-def buildStartReport() {
-  startReport()
-  }
-
-}
-
 stage('Prepare') {
   echo 'Starting the build...'
 }
