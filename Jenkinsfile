@@ -94,7 +94,9 @@ stage('Analysing') {
           unstash 'Artifacts-lms-unit:3'
           unstash 'Artifacts-lms-unit:4'
           unstash 'Artifacts-cms-unit:all'
-          sh './scripts/jenkins-report.sh'
+	  withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
+            sh './scripts/jenkins-report.sh'
+          }
         } finally {
           archiveArtifacts 'reports/**, test_root/log/**'
 
