@@ -72,10 +72,42 @@ stage('Test') {
   parallel buildParallelSteps()
 }
 
-stage('Analysing') {
-  build job: 'coverage-report', parameters: [string(name: 'TARGET_BRANCH', value: 'open-release/ficus.master')]
+stage('Prepare to analysing') {
+  stash includes: 'reports/**', name: 'artifacts'
+}
+
+stage('Creating coverage analysis') {
+  node('unit-test-worker-1') {
+      // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
+      step([$class: 'WsCleanup'])
+
+      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/edx/edx-platform']]])
+
+      sh 'git log --oneline | head'
+
+      timeout(time: 55, unit: 'MINUTES') {
+        echo "Hi, it is me coverage agent again, the worker just started!"
+
+        try {
+		  unstash 'artifacts'
+          withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
+            sh './scripts/jenkins-report.sh'
+          }
+          }
+        } finally {
+          archiveArtifacts 'reports/**, test_root/log/**'
+
+          try {
+            cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false'
+          } finally {
+            // This works, but only for the current build files.
+            deleteDir()
+          }
+        }
+      }
+    }
 }
 
 stage('Done') {
-  echo 'Done :)'
+  echo 'Done! :)'
 }
