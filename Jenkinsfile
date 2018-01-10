@@ -40,8 +40,6 @@ def makeNode(suite, shard) {
 
 def getSuites() {
   return [
-    [name: 'commonlib-js-unit', 'shards': ['all']],
-    [name: 'quality', 'shards': ['all']],
     [name: 'lms-unit', 'shards': [
       1,
       2,
@@ -49,22 +47,6 @@ def getSuites() {
       4,
     ]],
     [name: 'cms-unit', 'shards': ['all']],
-    [name: 'accessibility', 'shards': ['all']],
-    [name: 'lms-acceptance', 'shards': ['all']],
-    [name: 'cms-acceptance', 'shards': ['all']],
-    [name: 'bok-choy', 'shards': [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-    ]],
   ]
 }
 
