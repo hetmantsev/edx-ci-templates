@@ -99,8 +99,6 @@ def buildParallelSteps() {
 
 def buildStartReport() {
   startReport()
-  }
-
 }
 
 stage('Prepare') {
