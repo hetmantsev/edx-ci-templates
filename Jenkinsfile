@@ -25,6 +25,7 @@ def startTests(suite, shard) {
           }
         } finally {
           archiveArtifacts 'reports/**, test_root/log/**'
+		  stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
 
           try {
             junit 'reports/**/*.xml'
@@ -72,10 +73,6 @@ stage('Test') {
   parallel buildParallelSteps()
 }
 
-stage('Prepare to analysing') {
-  stash includes: 'reports/**', name: 'artifacts'
-}
-
 stage('Creating coverage analysis') {
   node('unit-test-worker-1') {
       // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
@@ -89,7 +86,11 @@ stage('Creating coverage analysis') {
         echo "Hi, it is me coverage agent again, the worker just started!"
 
         try {
-		  unstash 'artifacts'
+		  unstash "artifacts-lms-unit-1"
+		  unstash "artifacts-lms-unit-2"
+		  unstash "artifacts-lms-unit-3"
+		  unstash "artifacts-lms-unit-4"
+		  unstash "artifacts-cms-unit-all"
           withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
             sh './scripts/jenkins-report.sh'
           }
