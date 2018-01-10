@@ -25,7 +25,7 @@ def startTests(suite, shard) {
           }
         } finally {
           archiveArtifacts 'reports/**, test_root/log/**'
-	  stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
+		  stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
 
           try {
             junit 'reports/**/*.xml'
@@ -41,7 +41,13 @@ def startTests(suite, shard) {
 
 def getSuites() {
   return [
-    [name: 'lms-unit', 'shards': ['3']],
+    [name: 'lms-unit', 'shards': [
+      1,
+      2,
+      3,
+      4,
+    ]],
+    [name: 'cms-unit', 'shards': ['all']],
   ]
 }
 
@@ -80,7 +86,11 @@ stage('Creating coverage analysis') {
         echo "Hi, it is me coverage agent again, the worker just started!"
 
         try {
-	  unstash "artifacts-cms-unit-all"
+		  unstash 'artifacts-lms-unit-1'
+		  unstash 'artifacts-lms-unit-2'
+		  unstash 'artifacts-lms-unit-3'
+		  unstash 'artifacts-lms-unit-4'
+		  unstash 'artifacts-cms-unit-all'
           withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
             sh './scripts/jenkins-report.sh'
           }
@@ -91,6 +101,7 @@ stage('Creating coverage analysis') {
             cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
           } finally {
             // This works, but only for the current build files.
+            deleteDir()
           }
         }
       }
