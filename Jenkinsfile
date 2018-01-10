@@ -64,29 +64,18 @@ def buildParallelSteps() {
   return parallelSteps
 }
 
+stage('Prepare') {
+  echo 'Starting the build...'
+  echo 'It it always nice to have a green checkmark :D'
+}
+
+stage('Test') {
+  // This commit should be removed via
+  parallel buildParallelSteps()
+}
+
 stage('Creating coverage report') {
-  node('unit-test-worker-1 || unit-test-worker-2 || unit-test-worker-3 || unit-test-worker-4 || unit-test-worker-5') {
-      // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
-      step([$class: 'WsCleanup'])
-
-      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/edx/edx-platform']]])
-
-      sh 'git log --oneline | head'
-
-      timeout(time: 55, unit: 'MINUTES') {
-        echo "Hi, it is me coverage worker again, the worker just started!"
-
-        try {
-		  withEnv(["TARGET_BRANCH=open-release/ficus.master"])
-          copyArtifacts filter: 'reports/**, test_root/log/**', projectName: 'ficus-pipeline', selector: lastSuccessful()
-		  sh './scripts/jenkins-report.sh'
-		  
-        } finally {
-          archiveArtifacts 'reports/**, test_root/log/**'
-		  deleteDir()
-        }
-      }
-    }
+  
 }
 
 stage('Done') {
