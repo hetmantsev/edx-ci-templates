@@ -66,18 +66,21 @@ def buildParallelSteps() {
 
 stage('Prepare') {
   echo 'Starting the build...'
-  echo 'It it always nice to have a green checkmark :D'
 }
 
 stage('Test') {
-  // This commit should be removed via
   parallel buildParallelSteps()
 }
 
 stage('Creating coverage report') {
-  
-}
-
-stage('Done') {
-  echo 'I am done, hurray!'
+  try {
+    build job: 'coverage-report', parameters: [string(name: 'TARGET_BRANCH', value: 'open-release/ficus.master')]
+    } finally {
+      copyArtifacts filter: 'reports/**, test_root/log/**', projectName: 'coverage-report', selector: lastSuccessful()
+      try {
+        archiveArtifacts 'reports/**, test_root/log/**'
+        } finally {
+          deleteDir()
+          }
+	  }
 }
