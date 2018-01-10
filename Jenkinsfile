@@ -24,43 +24,10 @@ def startTests(suite, shard) {
             }
           }
         } finally {
-		  stash includes: 'reports/**, test_root/log/**', name: 'Artifacts', useDefaultExcludes: false
+		  stash includes: 'reports/**, test_root/log/**', name: 'Artifacts-${suite}:${shard}', useDefaultExcludes: false
 
           try {
             junit 'reports/**/*.xml'
-          } finally {
-            // This works, but only for the current build files.
-            deleteDir()
-          }
-        }
-      }
-    }
-  }
-}
-
-def startReport() {
-  return {
-    echo "I am coverage reporter, and the worker is yet to be started!"
-
-    node('unit-test-worker-1 || unit-test-worker-2 || unit-test-worker-3 || unit-test-worker-4 || unit-test-worker-5') {
-      // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
-      step([$class: 'WsCleanup'])
-
-      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/edx/edx-platform']]])
-
-      sh 'git log --oneline | head'
-
-      timeout(time: 55, unit: 'MINUTES') {
-        echo "Hi, it is me coverage reporter again, the worker just started!"
-
-        try {
-          unstash 'Artifacts'
-          sh './scripts/jenkins-report.sh'
-        } finally {
-          archiveArtifacts 'reports/**, test_root/log/**'
-
-          try {
-            cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '/reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
           } finally {
             // This works, but only for the current build files.
             deleteDir()
@@ -110,7 +77,36 @@ stage('Test') {
 }
 
 stage('Analysing') {
-  parallel buildStartReport()
+  node('unit-test-worker-1 || unit-test-worker-2 || unit-test-worker-3 || unit-test-worker-4 || unit-test-worker-5') {
+      // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
+      step([$class: 'WsCleanup'])
+
+      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/edx/edx-platform']]])
+
+      sh 'git log --oneline | head'
+
+      timeout(time: 55, unit: 'MINUTES') {
+        echo "Hi, it is me coverage reporter again, the worker just started!"
+
+        try {
+          unstash 'Artifacts-lms-unit:1'
+          unstash 'Artifacts-lms-unit:2'
+          unstash 'Artifacts-lms-unit:3'
+          unstash 'Artifacts-lms-unit:4'
+          unstash 'Artifacts-cms-unit:all'
+          sh './scripts/jenkins-report.sh'
+        } finally {
+          archiveArtifacts 'reports/**, test_root/log/**'
+
+          try {
+            cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: '/reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+          } finally {
+            // This works, but only for the current build files.
+            deleteDir()
+          }
+        }
+      }
+    }
 }
 
 stage('Done') {
