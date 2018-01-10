@@ -72,15 +72,6 @@ stage('Test') {
   parallel buildParallelSteps()
 }
 
-stage('Creating coverage report') {
-  try {
-    build job: 'coverage-report', parameters: [string(name: 'TARGET_BRANCH', value: 'open-release/ficus.master')]
-    } finally {
-      copyArtifacts filter: 'reports/**, test_root/log/**', projectName: 'coverage-report', selector: lastSuccessful()
-      try {
-        archiveArtifacts 'reports/**, test_root/log/**'
-        } finally {
-          deleteDir()
-          }
-	  }
+stage('Done') {
+  echo 'Done :)'
 }
