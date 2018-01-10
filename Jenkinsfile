@@ -93,7 +93,6 @@ stage('Creating coverage analysis') {
           withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
             sh './scripts/jenkins-report.sh'
           }
-          }
         } finally {
           archiveArtifacts 'reports/**, test_root/log/**'
 
