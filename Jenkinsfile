@@ -8,13 +8,13 @@ def startTests(suite, shard) {
       // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
       step([$class: 'WsCleanup'])
 
-      checkout scm
+      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/python-squad/edx-platform']]])
 
       sh 'git log --oneline | head'
 
       timeout(time: 55, unit: 'MINUTES') {
         echo "Hi, it is me ${suite}:${shard} again, the worker just started!"
-	githubNotify account: "hetmantsev", context: "${suite}-${shard}", credentialsId: "hetmantsev", repo: "edx-platform", sha: "2295341f79d0c7f38425839a9e9067490ef0c7e1", status: "PENDING", targetUrl: "https://jenkins.raccoongang.com"
+	githubNotify account: "hetmantsev", context: "${suite}-${shard}", credentialsId: "0fa04582-7bd4-4be9-bd80-0133a235af9e", repo: "edx-platform", sha: "2295341f79d0c7f38425839a9e9067490ef0c7e1", status: "PENDING", targetUrl: "https://jenkins.raccoongang.com"
 
         try {
           if (suite == 'accessibility') {
@@ -80,7 +80,7 @@ stage('Analysis') {
       // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
       step([$class: 'WsCleanup'])
 
-      checkout scm
+      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/python-squad/edx-platform']]])
 
       sh 'git log --oneline | head'
 
