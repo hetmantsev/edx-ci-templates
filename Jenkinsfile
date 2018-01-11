@@ -14,6 +14,7 @@ def startTests(suite, shard) {
 
       timeout(time: 55, unit: 'MINUTES') {
         echo "Hi, it is me ${suite}:${shard} again, the worker just started!"
+	githubNotify account: "hetmantsev", context: "${suite}-${shard}", credentialsId: "hetmantsev", repo: "edx-platform", sha: "2295341f79d0c7f38425839a9e9067490ef0c7e1", status: "PENDING", targetUrl: "https://jenkins.raccoongang.com"
 
         try {
           if (suite == 'accessibility') {
@@ -32,6 +33,7 @@ def startTests(suite, shard) {
           } finally {
             // This works, but only for the current build files.
             deleteDir()
+	    githubNotify account: "hetmantsev", context: "${suite}-${shard}", credentialsId: "0fa04582-7bd4-4be9-bd80-0133a235af9e", repo: "edx-platform", sha: "2295341f79d0c7f38425839a9e9067490ef0c7e1", status: "SUCCESS", targetUrl: "https://jenkins.raccoongang.com"
           }
         }
       }
