@@ -51,7 +51,6 @@ def getSuites() {
     ]],
     [name: 'cms-unit', 'shards': ['all'],
     [name: 'commonlib-unit', 'shards': ['all']]
-  ]
 }
 
 def buildParallelSteps() {
