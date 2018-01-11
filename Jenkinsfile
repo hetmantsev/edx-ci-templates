@@ -84,15 +84,16 @@ stage('Analysis') {
 
       timeout(time: 55, unit: 'MINUTES') {
         echo "Hi, it is me coverage agent again, the worker just started!"
-
-	unstash 'artifacts-lms-unit-1'
-	unstash 'artifacts-lms-unit-2'
-	unstash 'artifacts-lms-unit-3'
-	unstash 'artifacts-lms-unit-4'
-	unstash 'artifacts-cms-unit-all'
-        unstash 'artifacts-commonlib-unit-all'      
+     
         try {
-	  sh './scripts/jenkins-report.sh'
+	  unstash 'artifacts-lms-unit-1'
+	  unstash 'artifacts-lms-unit-2'
+	  unstash 'artifacts-lms-unit-3'
+	  unstash 'artifacts-lms-unit-4'
+	  unstash 'artifacts-cms-unit-all' 
+	  withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
+ -              sh './scripts/jenkins-report.sh'
+ -          }
 	} finally {	
           archiveArtifacts 'reports/**, test_root/log/**'
  	  cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
