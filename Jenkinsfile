@@ -25,7 +25,7 @@ def startTests(suite, shard) {
           }
         } finally {
           archiveArtifacts 'reports/**, test_root/log/**'
-		  stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
+	  stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
 
           try {
             junit 'reports/**/*.xml'
