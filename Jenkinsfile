@@ -4,7 +4,7 @@ def startTests(suite, shard) {
   return {
     echo "I am ${suite}:${shard}, and the worker is yet to be started!"
 
-    node('unit-test-worker-1 || unit-test-worker-2 || unit-test-worker-3 || unit-test-worker-4 || unit-test-worker-5') {
+    node('unit-test-worker-4 || unit-test-worker-5') {
       // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
       step([$class: 'WsCleanup'])
 
@@ -74,7 +74,7 @@ stage('Test') {
 }
 
 stage('Creating coverage analysis') {
-  node('unit-test-worker-1') {
+  node('unit-test-worker-4 || unit-test-worker-5') {
       // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
       step([$class: 'WsCleanup'])
 
