@@ -85,13 +85,13 @@ stage('Analysis') {
       timeout(time: 55, unit: 'MINUTES') {
         echo "Hi, it is me coverage agent again, the worker just started!"
 
+	unstash 'artifacts-lms-unit-1'
+	unstash 'artifacts-lms-unit-2'
+	unstash 'artifacts-lms-unit-3'
+	unstash 'artifacts-lms-unit-4'
+	unstash 'artifacts-cms-unit-all'
+        unstash 'artifacts-commonlib-unit-all'      
         try {
-	  unstash 'artifacts-lms-unit-1'
-	  unstash 'artifacts-lms-unit-2'
-	  unstash 'artifacts-lms-unit-3'
-	  unstash 'artifacts-lms-unit-4'
-	  unstash 'artifacts-cms-unit-all'
-          unstash 'artifacts-commonlib-unit-all'
 	  sh './scripts/jenkins-report.sh'
 	} finally {	
           archiveArtifacts 'reports/**, test_root/log/**'
