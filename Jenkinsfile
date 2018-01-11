@@ -47,7 +47,8 @@ def getSuites() {
       3,
       4,
     ]],
-    [name: 'cms-unit', 'shards': ['all']]
+    [name: 'cms-unit', 'shards': ['all'],
+    [name: 'commonlib-unit', 'shards': ['all']]
   ]
 }
 
@@ -91,6 +92,7 @@ stage('Analysis') {
 	  unstash 'artifacts-lms-unit-3'
 	  unstash 'artifacts-lms-unit-4'
 	  unstash 'artifacts-cms-unit-all'
+          unstash 'artifacts-commonlib-unit-all'
 	  withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
               sh './scripts/jenkins-report.sh'
           }
