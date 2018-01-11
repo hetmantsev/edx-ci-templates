@@ -41,7 +41,13 @@ def startTests(suite, shard) {
 
 def getSuites() {
   return [
-    [name: 'cms-unit', 'shards': ['all']],
+    [name: 'lms-unit', 'shards': [
+      1,
+      2,
+      3,
+      4,
+    ]],
+    [name: 'cms-unit', 'shards': ['all']]
   ]
 }
 
