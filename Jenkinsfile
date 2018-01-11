@@ -92,7 +92,8 @@ stage('Creating coverage analysis') {
 		  unstash 'artifacts-lms-unit-4'
 		  unstash 'artifacts-cms-unit-all'
           withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
-            sh './scripts/jenkins-report.sh'
+            sh 'source ~/edx-venv/bin/activate'
+	    sh 'paver coverage'
           }
         } finally {
           archiveArtifacts 'reports/**, test_root/log/**'
