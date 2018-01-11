@@ -86,14 +86,14 @@ stage('Creating coverage analysis') {
         echo "Hi, it is me coverage agent again, the worker just started!"
 
         try {
-		  unstash 'artifacts-lms-unit-1'
-		  unstash 'artifacts-lms-unit-2'
-		  unstash 'artifacts-lms-unit-3'
-		  unstash 'artifacts-lms-unit-4'
-		  unstash 'artifacts-cms-unit-all'
+	  unstash 'artifacts-lms-unit-1'
+	  unstash 'artifacts-lms-unit-2'
+	  unstash 'artifacts-lms-unit-3'
+	  unstash 'artifacts-lms-unit-4'
+	  unstash 'artifacts-cms-unit-all'
           withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
             sh 'source ~/edx-venv/bin/activate'
-	    sh 'paver coverage'
+	    sh "paver coverage -b ${TARGET_BRANCH}"
           }
         } finally {
           archiveArtifacts 'reports/**, test_root/log/**'
