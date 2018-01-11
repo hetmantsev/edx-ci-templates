@@ -8,7 +8,7 @@ def startTests(suite, shard) {
       // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
       step([$class: 'WsCleanup'])
 
-      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/edx/edx-platform']]])
+      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/hetmantsev/edx-platform']]])
 
       sh 'git log --oneline | head'
 
@@ -78,7 +78,7 @@ stage('Analysis') {
       // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
       step([$class: 'WsCleanup'])
 
-      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/edx/edx-platform']]])
+      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/hetmantsev/edx-platform']]])
 
       sh 'git log --oneline | head'
 
@@ -91,7 +91,9 @@ stage('Analysis') {
 	  unstash 'artifacts-lms-unit-3'
 	  unstash 'artifacts-lms-unit-4'
 	  unstash 'artifacts-cms-unit-all'
-	  sh 'source ~/edx-venv/bin/activate && paver coverage'
+	  withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
+              sh './scripts/jenkins-report.sh'
+          }
 	} finally {	
           archiveArtifacts 'reports/**, test_root/log/**'
  	  cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
