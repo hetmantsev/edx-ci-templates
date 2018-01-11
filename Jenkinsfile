@@ -4,7 +4,7 @@ def startTests(suite, shard) {
   return {
     echo "I am ${suite}:${shard}, and the worker is yet to be started!"
 
-    node('${suite}-${shard}-worker') {
+    node("${suite}-${shard}-worker") {
       // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
       step([$class: 'WsCleanup'])
 
