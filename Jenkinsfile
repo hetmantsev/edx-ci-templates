@@ -41,12 +41,6 @@ def startTests(suite, shard) {
 
 def getSuites() {
   return [
-    [name: 'lms-unit', 'shards': [
-      1,
-      2,
-      3,
-      4,
-    ]],
     [name: 'cms-unit', 'shards': ['all']],
   ]
 }
@@ -93,7 +87,7 @@ stage('Creating coverage analysis') {
 	  unstash 'artifacts-cms-unit-all'
           withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
             sh 'source ~/edx-venv/bin/activate'
-	    sh "paver coverage -b ${TARGET_BRANCH}"
+	    sh 'paver coverage'
           }
         } finally {
           archiveArtifacts 'reports/**, test_root/log/**'
