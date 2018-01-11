@@ -85,18 +85,16 @@ stage('Analysis') {
 	  unstash 'artifacts-lms-unit-3'
 	  unstash 'artifacts-lms-unit-4'
 	  unstash 'artifacts-cms-unit-all'
-	  sh ("""
-	  find reports/.coverage* -type f -exec sed -i 's/lms-unit-1/coverage-report/g' {} \\/;
-	  find reports/.coverage* -type f -exec sed -i 's/lms-unit-2/coverage-report/g' {} \\/;
-	  find reports/.coverage* -type f -exec sed -i 's/lms-unit-3/coverage-report/g' {} \\/;
-	  find reports/.coverage* -type f -exec sed -i 's/lms-unit-4/coverage-report/g' {} \\/;
-	  find reports/.coverage* -type f -exec sed -i 's/cms-unit-1/coverage-report/g' {} \\/;
-	  """)
-          sh 'source ~/edx-venv/bin/activate'
-	  sh 'paver coverage'
-          } finally {
-            archiveArtifacts 'reports/**, test_root/log/**'
- 	    cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+	  
+	} finally {	
+	  sh "find reports/.coverage* -type f -exec sed -i 's/lms-unit-1/coverage-report/g' {} \\/;"
+	  sh "find reports/.coverage* -type f -exec sed -i 's/lms-unit-2/coverage-report/g' {} \\/;"
+	  sh "find reports/.coverage* -type f -exec sed -i 's/lms-unit-3/coverage-report/g' {} \\/;"
+	  sh "find reports/.coverage* -type f -exec sed -i 's/lms-unit-4/coverage-report/g' {} \\/;"
+	  sh "find reports/.coverage* -type f -exec sed -i 's/cms-unit-1/coverage-report/g' {} \\/;"
+	  sh 'source ~/edx-venv/bin/activate && paver coverage'
+          archiveArtifacts 'reports/**, test_root/log/**'
+ 	  cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
           }
       }
     }
