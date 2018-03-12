@@ -90,7 +90,7 @@ def startAccessibility(suite, shard) {
                     throw err
                 } finally {
                     archiveArtifacts 'reports/**'
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/pa11ycrawler/html', reportName: 'HTML Report', reportTitles: ''])
+                    cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/a11y/coverage.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true
                     deleteDir()                    
                 }
             }
