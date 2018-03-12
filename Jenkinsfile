@@ -1,107 +1,280 @@
 #!groovy
 
-def startTests(suite, shard) {
-  return {
-    echo "I am ${suite}:${shard}, and the worker is yet to be started!"
+worker_name = "worker-1||worker-2||worker-3||worker-4||worker-5||worker-6||worker-7||worker-8||worker-9"
+slack_team_domain = "raccoongang"
+git_credentials_id = "d8423bf1-e975-438f-9710-b9593a503b9f"
+git_url = "git@github.com:hetmantsev/edx-platform.git"
+slack_credentials_id = "slack-secret-token"
+codecov_credentials_id = "rg-codecov-edx-platform-token"
 
-    node("${suite}-${shard}-worker") {
-      // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
-      step([$class: 'WsCleanup'])
-
-      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/python-squad/edx-platform']]])
-
-      sh 'git log --oneline | head'
-
-      timeout(time: 55, unit: 'MINUTES') {
-        echo "Hi, it is me ${suite}:${shard} again, the worker just started!"
-
-        try {
-          if (suite == 'accessibility') {
-            sh './scripts/accessibility-tests.sh'
-          } else {
-            withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
-              sh './scripts/all-tests.sh'
-            }
-          }
-        } finally {
-          archiveArtifacts 'reports/**, test_root/log/**'
-	  stash includes: 'reports/**, test_root/log/**', name: "artifacts-${suite}-${shard}"
-
-          try {
-            junit 'reports/**/*.xml'
-          } finally {
-            // This works, but only for the current build files.
-            deleteDir()
-          }
-        }
-      }
-    }
-  }
-}
+/* Global slack messages */
+global_start_message = "CI ${env.JOB_NAME}-test started for ${ghprbPullLink}! (<${env.BUILD_URL}|Open>)"
+global_finish_message = "CI ${env.JOB_NAME}-test finished for ${ghprbPullLink}! (<${env.BUILD_URL}|Open>)"
 
 def getSuites() {
-  return [
-    [name: 'lms-unit', 'shards': [
-      1,
-      2,
-      3,
-      4,
-    ]],
-    [name: 'cms-unit', 'shards': ['all']],
-  ]
+    if (env.JOB_NAME ==~ /^.*accessibility.*$/){
+        return [
+            [name: 'accessibility', 'shards': ['all']],
+        ]
+    }
+    if (env.JOB_NAME ==~ /^.*bokchoy.*$/){
+        return [
+            [name: 'bok-choy', 'shards': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,]],
+        ]
+    }
+    if (env.JOB_NAME ==~ /^.*javascript.*$/){
+    return [
+            [name: 'js-unit', 'shards': ['all']],
+        ]
+    }
+    if (env.JOB_NAME ==~ /^.*lettuce.*$/){
+        return [
+            [name: 'lms-acceptance', 'shards': ['all']],
+            [name: 'cms-acceptance', 'shards': ['all']],
+        ]
+    }
+    if (env.JOB_NAME ==~ /^.*quality.*$/){
+        return [
+            [name: 'quality', 'shards': ['all']],
+        ]
+    }
+    if (env.JOB_NAME ==~ /^.*unit.*$/){
+        return [
+            [name: 'commonlib-unit', 'shards': ['all']],
+            [name: 'lms-unit', 'shards': [1, 2, 3, 4,]],
+            [name: 'cms-unit', 'shards': ['all']],
+        ]
+    }
 }
 
-def buildParallelSteps() {
-  def parallelSteps = [:]
+def startParallelSteps() {
+    def suiteNames = [:]
 
-  for (def suite in getSuites()) {
-    def name = suite['name']
+    for (def suite in getSuites()) {
+        def name = suite['name']
 
-    for (def shard in suite['shards']) {
-      parallelSteps["${name}_${shard}"] = startTests(name, shard)
+        for (def shard in suite['shards']) {
+            if (env.JOB_NAME ==~ /^.*accessibility.*$/){
+                suiteNames["${name}_${shard}"] = startAccessibility(name, shard)
+            }
+            if (env.JOB_NAME ==~ /^.*bokchoy.*$/){
+                suiteNames["${name}_${shard}"] = startBokchoy(name, shard)
+            }    
+            if (env.JOB_NAME ==~ /^.*javascript.*$/){
+                suiteNames["${name}_${shard}"] = startJavascript(name, shard)
+            }
+            if (env.JOB_NAME ==~ /^.*lettuce.*$/){
+                suiteNames["${name}_${shard}"] = startLettuce(name, shard)
+            }
+            if (env.JOB_NAME ==~ /^.*quality.*$/){
+                suiteNames["${name}_${shard}"] = startQuality(name, shard)
+            }
+            if (env.JOB_NAME ==~ /^.*unit.*$/){
+                suiteNames["${name}_${shard}"] = startUnit(name, shard)
+            }        
+        }
     }
-  }
+    return suiteNames
+}
 
-  return parallelSteps
+def startAccessibility(suite, shard) {
+    return {
+        node("${worker_name}") {
+            wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
+                cleanWs()
+                checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
+                try {
+                    sh './scripts/accessibility-tests.sh'
+                } catch (err) {
+                    slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
+                    throw err
+                } finally {
+                    archiveArtifacts 'reports/**'
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/pa11ycrawler/html', reportName: 'HTML Report', reportTitles: ''])
+                    deleteDir()                    
+                }
+            }
+        }
+    }
+}
+
+def startBokchoy(suite, shard) {
+    return {
+        node("${worker_name}") {
+            wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
+                cleanWs()
+                checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
+                try {
+                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+                        sh './scripts/all-tests.sh'
+                    }
+                } catch (err) {
+                    slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
+                    throw err
+                } finally {
+                    archiveArtifacts 'reports/**'
+                    junit 'reports/bok_choy/*.xml'
+                    deleteDir()
+                }
+            }
+        }
+    }
+}
+
+def startJavascript(suite, shard) {
+    return {
+        node("${worker_name}") {
+            wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
+                cleanWs()
+                checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
+                try {
+                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+                        sh './scripts/all-tests.sh'
+                    }
+                } catch (err) {
+                    slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
+                    throw err
+                } finally {
+                    archiveArtifacts 'reports/**'
+                    junit 'reports/javascript/javascript_xunit-*.xml'
+                    cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/javascript/coverage-*.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true
+                    deleteDir()
+                }
+            }
+        }
+    }
+}
+
+def startLettuce(suite, shard) {
+    return {
+        node("${worker_name}") {
+            wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
+                cleanWs()
+                checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
+                try {
+                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+                        sh './scripts/all-tests.sh'
+                    }
+                } catch (err) {
+                    slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
+                    throw err
+                } finally {
+                    deleteDir()
+                }
+            }
+        }
+    }
+}
+
+def startQuality(suite, shard) {
+    return {
+        node("${worker_name}") {
+            wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
+                cleanWs()
+                checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
+                try {
+                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+                        sh './scripts/all-tests.sh'
+                    }
+                } catch (err) {
+                    slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
+                    throw err
+                } finally {
+                    archiveArtifacts 'reports/**'
+                    junit 'reports/*.xml'
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_eslint.html', reportName: 'Diff Quality eslint Report', reportTitles: ''])
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_pep8.html', reportName: 'Diff Quality pep8 Report', reportTitles: ''])
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_pylint.html', reportName: 'Diff Quality pylint Report', reportTitles: ''])
+                    deleteDir()
+                }
+            }
+        }
+    }
+}
+
+def startUnit(suite, shard) {
+    return {
+        node("${worker_name}") {
+            wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
+                cleanWs()
+                checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
+                try {
+                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+                        sh './scripts/all-tests.sh'
+                    }
+                } catch (err) {
+                    slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
+                    throw err
+                } finally {
+                    archiveArtifacts 'reports/**'
+                    stash includes: 'reports/**', name: "artifacts-${suite}-${shard}"
+                    junit 'reports/**/*.xml'
+                    deleteDir()
+                }
+            }
+        }
+    }
+}
+  
+def coverageTest() {
+    node("${worker_name}") {
+        wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
+            cleanWs()
+            checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
+
+            withCredentials([string(credentialsId: "${codecov_credentials_id}", variable: 'CODE_COV_TOKEN')]) {
+                codecov_token = env.CODE_COV_TOKEN
+            }
+       
+            echo "Unstash unit-tests artifacts."
+            unstash "artifacts-lms-unit-1"
+            unstash "artifacts-lms-unit-2"
+            unstash "artifacts-lms-unit-3"
+            unstash "artifacts-lms-unit-4"
+            unstash "artifacts-commonlib-unit-all"
+            unstash "artifacts-cms-unit-all"
+            
+            try {
+                if (change_target != null) {
+                    codecov_pr = "true"
+                    coverage_branch = "origin/${ghprbTargetBranch}"
+                } else {
+                    codecov_pr = "false"
+                    coverage_branch = "origin/${ghprbTargetBranch}"
+                }
+                sh """source ./scripts/jenkins-common.sh
+                paver coverage -b ${coverage_branch}
+                pip install codecov==2.0.15
+                codecov --token=${codecov_token} --branch=${ghprbSourceBranch} --commit=${ghprbActualCommit} --pr=${codecov_pr}"""
+            } catch (err) {
+                slackSend channel: channel_name, color: 'danger', message: "Coverage report for ${ghprbPullLink} failed. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
+                throw err
+            } finally {
+                archiveArtifacts 'reports/**'
+                cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/coverage.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_coverage_combined.html', reportName: 'Diff Coverage Report', reportTitles: ''])
+            }                
+            deleteDir()
+        }
+    }
 }
 
 stage('Prepare') {
-  echo 'Starting the build...'
+    echo 'Starting the build...'
+    slackSend channel: channel_name, color: 'good', message: "CI ${env.JOB_NAME}-test started for ${ghprbPullLink}! (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
 }
 
-stage('Test') {
-  parallel buildParallelSteps()
+stage('Tests') {
+    parallel startParallelSteps()
 }
 
-stage('Analysis') {
-  node('coverage-report-worker') {
-      // Cleaning up previous builds. Heads up! Not sure if `WsCleanup` actually works.
-      step([$class: 'WsCleanup'])
-
-      checkout([$class: 'GitSCM', branches: [[name: 'open-release/ficus.master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: 'https://github.com/python-squad/edx-platform']]])
-
-      sh 'git log --oneline | head'
-
-      timeout(time: 55, unit: 'MINUTES') {
-        echo "Hi, it is me coverage agent again, the worker just started!"
-     
-        try {
-	  unstash 'artifacts-lms-unit-1'
-	  unstash 'artifacts-lms-unit-2'
-	  unstash 'artifacts-lms-unit-3'
-	  unstash 'artifacts-lms-unit-4'
-	  unstash 'artifacts-cms-unit-all' 
-	  withEnv(["TARGET_BRANCH=open-release/ficus.master"]) {
-            sh './scripts/jenkins-report.sh'
-          }
-	} finally {	
-          archiveArtifacts 'reports/**, test_root/log/**'
- 	  cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'reports/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
-          }
-      }
+if (env.JOB_NAME ==~ /^.*unit.*$/){
+    stage('Coverage') {
+        coverageTest()
     }
 }
 
 stage('Done') {
-  echo 'Done! :)'
+    echo 'Done! :)'
+    slackSend channel: channel_name, color: 'good', message: "CI Tests finished! ${env.JOB_NAME} (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
 }
