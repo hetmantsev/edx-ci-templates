@@ -3,7 +3,7 @@
 worker_name = "worker-1||worker-2||worker-3||worker-4||worker-5||worker-6||worker-7||worker-8||worker-9"
 slack_team_domain = "raccoongang"
 git_credentials_id = "f8e16277-2f5d-4a1f-a25b-edacf6f2055d"
-git_url = "https://github.com/hetmantsev/edx-platform"
+git_url = "https://github.com/raccoongang/edx-platform"
 slack_credentials_id = "slack-secret-token"
 codecov_credentials_id = "rg-codecov-edx-platform-token"
 
