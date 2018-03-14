@@ -1,6 +1,6 @@
 #!groovy
 
-worker_name = "worker-1" /*||worker-2||worker-3||worker-4||worker-5||worker-6||worker-7||worker-8||worker-9*/
+worker_name = "worker-1||worker-2||worker-3||worker-4||worker-5||worker-6||worker-7||worker-8||worker-9"
 slack_team_domain = "raccoongang"
 git_credentials_id = "f8e16277-2f5d-4a1f-a25b-edacf6f2055d"
 git_url = "https://github.com/hetmantsev/edx-platform"
@@ -29,7 +29,7 @@ def getSuites() {
     }
     if (env.JOB_NAME ==~ /^.*lettuce.*$/){
         return [
-            /*[name: 'lms-acceptance', 'shards': ['all']],*/
+            [name: 'lms-acceptance', 'shards': ['all']],
             [name: 'cms-acceptance', 'shards': ['all']],
         ]
     }
@@ -90,9 +90,9 @@ def startAccessibility(suite, shard) {
                     throw err
                 } finally {
                     archiveArtifacts 'reports/**'
-                    cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/a11y/coverage.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true
-                    deleteDir()                    
+                    cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/a11y/coverage.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true                   
                 }
+                deleteDir()
             }
         }
     }
@@ -114,8 +114,8 @@ def startBokchoy(suite, shard) {
                 } finally {
                     archiveArtifacts 'reports/**'
                     junit 'reports/bok_choy/shard_.*/*.xml'
-                    deleteDir()
                 }
+                deleteDir()
             }
         }
     }
@@ -138,8 +138,8 @@ def startJavascript(suite, shard) {
                     archiveArtifacts 'reports/**'
                     junit 'reports/javascript/javascript_xunit-*.xml'
                     cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/javascript/coverage-*.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true
-                    deleteDir()
                 }
+                deleteDir()
             }
         }
     }
@@ -159,8 +159,9 @@ def startLettuce(suite, shard) {
                     slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
                     throw err
                 } finally {
-                    deleteDir()
+                    archiveArtifacts 'reports/**'
                 }
+                deleteDir()
             }
         }
     }
@@ -184,8 +185,8 @@ def startQuality(suite, shard) {
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_eslint.html', reportName: 'Diff Quality eslint Report', reportTitles: ''])
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_pep8.html', reportName: 'Diff Quality pep8 Report', reportTitles: ''])
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_pylint.html', reportName: 'Diff Quality pylint Report', reportTitles: ''])
-                    deleteDir()
                 }
+                deleteDir()
             }
         }
     }
@@ -208,8 +209,8 @@ def startUnit(suite, shard) {
                     archiveArtifacts 'reports/**'
                     stash includes: 'reports/**', name: "artifacts-${suite}-${shard}"
                     junit 'reports/**/*.xml'
-                    deleteDir()
                 }
+                deleteDir()
             }
         }
     }
@@ -234,17 +235,10 @@ def coverageTest() {
             unstash "artifacts-cms-unit-all"
             
             try {
-                if (change_target != null) {
-                    codecov_pr = "true"
-                    coverage_branch = "origin/${ghprbTargetBranch}"
-                } else {
-                    codecov_pr = "false"
-                    coverage_branch = "origin/${ghprbTargetBranch}"
-                }
                 sh """source ./scripts/jenkins-common.sh
                 paver coverage -b ${coverage_branch}
                 pip install codecov==2.0.15
-                codecov --token=${codecov_token} --branch=${ghprbSourceBranch} --commit=${ghprbActualCommit} --pr=${codecov_pr}"""
+                codecov --token=${codecov_token} --branch=${ghprbSourceBranch} --commit=${ghprbActualCommit} --pr=true"""
             } catch (err) {
                 slackSend channel: channel_name, color: 'danger', message: "Coverage report for ${ghprbPullLink} failed. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
                 throw err
