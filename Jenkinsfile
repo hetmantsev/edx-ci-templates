@@ -6,6 +6,7 @@ git_credentials_id = "f8e16277-2f5d-4a1f-a25b-edacf6f2055d"
 git_url = "https://github.com/hetmantsev/edx-platform"
 slack_credentials_id = "slack-secret-token"
 codecov_credentials_id = "rg-codecov-edx-platform-token"
+diff_target = "origin/${ghprbTargetBranch}"
 
 /* Global slack messages */
 global_start_message = "CI ${env.JOB_NAME}-test started for ${ghprbPullLink}! (<${env.BUILD_URL}|Open>)"
@@ -236,7 +237,7 @@ def coverageTest() {
             
             try {
                 sh """source ./scripts/jenkins-common.sh
-                paver coverage -b origin/${ghprbTargetBranch}
+                paver coverage -b ${diff_target}
                 pip install codecov==2.0.15
                 codecov --token=${codecov_token} --branch=${ghprbSourceBranch} --commit=${ghprbActualCommit} --pr=true"""
             } catch (err) {
