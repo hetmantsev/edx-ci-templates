@@ -91,8 +91,8 @@ def startAccessibility(suite, shard) {
                 } finally {
                     archiveArtifacts 'reports/**'
                     cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/a11y/coverage.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true                   
+                    deleteDir()
                 }
-                deleteDir()
             }
         }
     }
@@ -114,8 +114,8 @@ def startBokchoy(suite, shard) {
                 } finally {
                     archiveArtifacts 'reports/**'
                     junit 'reports/bok_choy/shard_.*/*.xml'
+                    deleteDir()
                 }
-                deleteDir()
             }
         }
     }
@@ -138,8 +138,8 @@ def startJavascript(suite, shard) {
                     archiveArtifacts 'reports/**'
                     junit 'reports/javascript/javascript_xunit-*.xml'
                     cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/javascript/coverage-*.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true
+                    deleteDir()
                 }
-                deleteDir()
             }
         }
     }
@@ -160,8 +160,8 @@ def startLettuce(suite, shard) {
                     throw err
                 } finally {
                     archiveArtifacts 'reports/**'
+                    deleteDir()
                 }
-                deleteDir()
             }
         }
     }
@@ -185,8 +185,8 @@ def startQuality(suite, shard) {
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_eslint.html', reportName: 'Diff Quality eslint Report', reportTitles: ''])
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_pep8.html', reportName: 'Diff Quality pep8 Report', reportTitles: ''])
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_pylint.html', reportName: 'Diff Quality pylint Report', reportTitles: ''])
+                    deleteDir()
                 }
-                deleteDir()
             }
         }
     }
@@ -209,8 +209,8 @@ def startUnit(suite, shard) {
                     archiveArtifacts 'reports/**'
                     stash includes: 'reports/**', name: "artifacts-${suite}-${shard}"
                     junit 'reports/**/*.xml'
+                    deleteDir()
                 }
-                deleteDir()
             }
         }
     }
@@ -246,8 +246,8 @@ def coverageTest() {
                 archiveArtifacts 'reports/**'
                 cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/coverage.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_coverage_combined.html', reportName: 'Diff Coverage Report', reportTitles: ''])
+                deleteDir()
             }                
-            deleteDir()
         }
     }
 }
