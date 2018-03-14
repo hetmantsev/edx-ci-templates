@@ -29,7 +29,7 @@ def getSuites() {
     }
     if (env.JOB_NAME ==~ /^.*lettuce.*$/){
         return [
-            [name: 'lms-acceptance', 'shards': ['all']],
+            /*[name: 'lms-acceptance', 'shards': ['all']],*/
             [name: 'cms-acceptance', 'shards': ['all']],
         ]
     }
