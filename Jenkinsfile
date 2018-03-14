@@ -175,7 +175,7 @@ def startQuality(suite, shard) {
                 cleanWs()
                 checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
                 try {
-                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}", "DIFF_TARGET=${diff_target}"]) {
                         sh './scripts/all-tests.sh'
                     }
                 } catch (err) {
