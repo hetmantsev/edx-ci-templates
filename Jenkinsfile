@@ -236,7 +236,7 @@ def coverageTest() {
             
             try {
                 sh """source ./scripts/jenkins-common.sh
-                paver coverage -b ${coverage_branch}
+                paver coverage -b ${ghprbTargetBranch}
                 pip install codecov==2.0.15
                 codecov --token=${codecov_token} --branch=${ghprbSourceBranch} --commit=${ghprbActualCommit} --pr=true"""
             } catch (err) {
