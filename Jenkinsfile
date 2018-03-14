@@ -176,7 +176,25 @@ def startQuality(suite, shard) {
                 checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
-                        sh './scripts/all-tests.sh'
+                        sh """source ./scripts/jenkins-common.sh
+                        pip install pylint
+                        echo "Finding fixme's and storing report..."
+                        paver find_fixme > fixme.log || { cat fixme.log; EXIT=1; }
+                        echo "Finding pep8 violations and storing report..."
+                        paver run_pep8 > pep8.log || { cat pep8.log; EXIT=1; }
+                        echo "Finding pylint violations and storing in report..."
+                        paver run_pylint -l $PYLINT_THRESHOLD > pylint.log || { cat pylint.log; EXIT=1; }
+                        echo "Finding ESLint violations and storing report..."
+                        paver run_eslint -l $ESLINT_THRESHOLD > eslint.log || { cat eslint.log; EXIT=1; }
+                        echo "Running code complexity report (python)."
+                        paver run_complexity > reports/code_complexity.log || echo "Unable to calculate code complexity. Ignoring error."
+                        echo "Running safe template linter report."
+                        paver run_safelint -t $SAFELINT_THRESHOLDS > safelint.log || { cat safelint.log; EXIT=1; }
+                        echo "Running safe commit linter report."
+                        paver run_safecommit_report > safecommit.log || { cat safecommit.log; EXIT=1; }
+                        echo "Running diff quality."
+                        paver run_quality -p 100 -b ${diff_target} || EXIT=1
+                        """
                     }
                 } catch (err) {
                     slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
