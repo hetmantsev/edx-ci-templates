@@ -176,9 +176,7 @@ def startQuality(suite, shard) {
                 checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
-                        sh """./scripts/all-tests.sh
-                        paver run_quality -p 100 -b ${diff_target}
-                        """
+                        sh './scripts/all-tests.sh'
                     }
                 } catch (err) {
                     slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
