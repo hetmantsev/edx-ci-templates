@@ -114,7 +114,7 @@ def startBokchoy(suite, shard) {
                     throw err
                 } finally {
                     archiveArtifacts 'reports/**'
-                    junit 'reports/bok_choy/shard_.*/*.xml'
+                    junit '/^reports/bok_choy/shard_\d+/xunit.xml$/'
                     deleteDir()
                 }
             }
