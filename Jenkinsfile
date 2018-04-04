@@ -232,7 +232,6 @@ def coverageTest() {
             unstash "artifacts-lms-unit-2"
             unstash "artifacts-lms-unit-3"
             unstash "artifacts-lms-unit-4"
-            unstash "artifacts-commonlib-unit-all"
             unstash "artifacts-cms-unit-all"
             
             try {
