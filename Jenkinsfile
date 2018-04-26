@@ -41,7 +41,7 @@ def getSuites() {
     }
     if (env.JOB_NAME ==~ /^.*unit.*$/){
         return [
-            [name: 'commonlib-unit', 'shards': ['all']],
+            /* [name: 'commonlib-unit', 'shards': ['all']], */
             [name: 'lms-unit', 'shards': [1, 2, 3, 4,]],
             [name: 'cms-unit', 'shards': ['all']],
         ]
@@ -233,7 +233,7 @@ def coverageTest() {
             unstash "artifacts-lms-unit-3"
             unstash "artifacts-lms-unit-4"
             unstash "artifacts-cms-unit-all"
-            unstash "artifacts-commonlib-unit-all"
+            /* unstash "artifacts-commonlib-unit-all" */
             
             try {
                 sh """source ./scripts/jenkins-common.sh
