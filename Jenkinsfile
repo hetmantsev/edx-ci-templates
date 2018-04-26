@@ -20,7 +20,7 @@ def getSuites() {
     }
     if (env.JOB_NAME ==~ /^.*bokchoy.*$/){
         return [
-            [name: 'bok-choy', 'shards': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,]],
+            [name: 'bok-choy', 'shards': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]],
         ]
     }
     if (env.JOB_NAME ==~ /^.*javascript.*$/){
@@ -36,7 +36,7 @@ def getSuites() {
     }
     if (env.JOB_NAME ==~ /^.*quality.*$/){
         return [
-            [name: 'quality', 'shards': ['all']],
+            [name: 'quality', 'shards': [1, 2, 3, 4,]],
         ]
     }
     if (env.JOB_NAME ==~ /^.*unit.*$/){
