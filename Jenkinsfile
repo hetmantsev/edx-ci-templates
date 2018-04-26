@@ -1,6 +1,6 @@
 #!groovy
 
-worker_name = "worker-1||worker-2||worker-3||worker-4||worker-5||worker-6||worker-7||worker-8||worker-9"
+worker_name = "hawthorn-worker"
 slack_team_domain = "raccoongang"
 git_credentials_id = "ef2bf63b-753b-40ac-984a-d95b6e63123b"
 git_url = "https://github.com/raccoongang/edx-platform"
@@ -41,8 +41,8 @@ def getSuites() {
     }
     if (env.JOB_NAME ==~ /^.*unit.*$/){
         return [
-            /* [name: 'commonlib-unit', 'shards': ['all']], */
-            [name: 'lms-unit', 'shards': [1, 2, 3, 4,]],
+            /* [name: 'commonlib-unit', 'shards': ['all']],
+            name: 'lms-unit', 'shards': [1, 2, 3, 4,]], */
             [name: 'cms-unit', 'shards': ['all']],
         ]
     }
@@ -228,10 +228,10 @@ def coverageTest() {
             }
        
             echo "Unstash unit-tests artifacts."
-            unstash "artifacts-lms-unit-1"
+            /*unstash "artifacts-lms-unit-1"
             unstash "artifacts-lms-unit-2"
             unstash "artifacts-lms-unit-3"
-            unstash "artifacts-lms-unit-4"
+            unstash "artifacts-lms-unit-4"*/
             unstash "artifacts-cms-unit-all"
             /* unstash "artifacts-commonlib-unit-all" */
             
