@@ -41,8 +41,8 @@ def getSuites() {
     }
     if (env.JOB_NAME ==~ /^.*unit.*$/){
         return [
-            /* [name: 'commonlib-unit', 'shards': ['all']],
-            name: 'lms-unit', 'shards': [1, 2, 3, 4,]], */
+            [name: 'commonlib-unit', 'shards': ['all']],
+            name: 'lms-unit', 'shards': [1, 2, 3, 4,]],
             [name: 'cms-unit', 'shards': ['all']],
         ]
     }
