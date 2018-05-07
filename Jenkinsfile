@@ -1,6 +1,6 @@
 #!groovy
 
-worker_name = "hawthorn-worker"
+worker_name = "hawthorn-worker-1||hawthorn-worker-2||hawthorn-worker-3||hawthorn-worker-4||hawthorn-worker-5"
 slack_team_domain = "raccoongang"
 git_credentials_id = "ef2bf63b-753b-40ac-984a-d95b6e63123b"
 git_url = "https://github.com/raccoongang/edx-platform"
