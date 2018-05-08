@@ -162,6 +162,7 @@ def startLettuce(suite, shard) {
                     throw err
                 } finally {
                     archiveArtifacts 'reports/**'
+                    junit 'reports/acceptance/*.xml'
                     deleteDir()
                 }
             }
