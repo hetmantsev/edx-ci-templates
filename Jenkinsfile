@@ -91,7 +91,8 @@ def startAccessibility(suite, shard) {
                     throw err
                 } finally {
                     archiveArtifacts 'reports/**'
-                    cobertura autoUpdateHealth: false, autoUpdateStability: false, classCoverageTargets: '95, 95, 0', coberturaReportFile: 'reports/a11y/coverage.xml', failUnhealthy: false, failUnstable: false, fileCoverageTargets: '95, 95, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '95, 95, 0', onlyStable: false, packageCoverageTargets: '95, 95, 0', sourceEncoding: 'ASCII', zoomCoverageChart: true                   
+                    junit 'reports/a11y/xunit.xml'
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/pa11ycrawler/html', reportFiles: 'index.html', reportName: 'Accessibility Audit Index', reportTitles: ''])                 
                     deleteDir()
                 }
             }
