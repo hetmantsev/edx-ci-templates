@@ -131,7 +131,7 @@ def startJavascript(suite, shard) {
                 checkout([$class: 'GitSCM', branches: [[name: '${ghprbSourceBranch}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '80bf5c5b-1fc9-41e3-bc48-2ca65c34cfea', url: "${git_url}"]]])
                 try {
                     sh """source ./scripts/jenkins-common.sh
-                    paver test_js --coverage'
+                    paver test_js --coverage
                     paver diff_coverage -b ${diff_target}"""
                 } catch (err) {
                     slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
