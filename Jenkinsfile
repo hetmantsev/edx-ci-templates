@@ -185,9 +185,6 @@ def startQuality(suite, shard) {
                     throw err
                 } finally {
                     archiveArtifacts 'reports/**'
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_eslint.html', reportName: 'Diff Quality eslint Report', reportTitles: ''])
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_pep8.html', reportName: 'Diff Quality pep8 Report', reportTitles: ''])
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_pylint.html', reportName: 'Diff Quality pylint Report', reportTitles: ''])
                     deleteDir()
                 }
             }
@@ -230,12 +227,12 @@ def coverageTest() {
             }
        
             echo "Unstash unit-tests artifacts."
-            /*unstash "artifacts-lms-unit-1"
+            unstash "artifacts-lms-unit-1"
             unstash "artifacts-lms-unit-2"
             unstash "artifacts-lms-unit-3"
-            unstash "artifacts-lms-unit-4"*/
+            unstash "artifacts-lms-unit-4"
             unstash "artifacts-cms-unit-all"
-            /* unstash "artifacts-commonlib-unit-all" */
+            unstash "artifacts-commonlib-unit-all"
             
             try {
                 sh """source ./scripts/jenkins-common.sh
