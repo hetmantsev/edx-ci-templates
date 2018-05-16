@@ -186,7 +186,7 @@ def startQuality(suite, shard) {
                 } finally {
                     archiveArtifacts 'reports/**'
                     archiveArtifacts 'test_root/**'
-                    deleteDir()
+                    /*deleteDir()*/
                 }
             }
         }
