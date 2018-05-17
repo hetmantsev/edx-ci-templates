@@ -36,7 +36,7 @@ def getSuites() {
     }
     if (env.JOB_NAME ==~ /^.*quality.*$/){
         return [
-            [name: 'quality', 'shards': [1, 2, 3, 4,]],
+            [name: 'quality', 'shards': [4]],
         ]
     }
     if (env.JOB_NAME ==~ /^.*unit.*$/){
