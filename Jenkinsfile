@@ -83,7 +83,7 @@ def startAccessibility(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, honorRefspec: true, noTags: true, reference: '', shallow: true, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false,  timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     sh './scripts/accessibility-tests.sh'
                 } catch (err) {
@@ -92,7 +92,7 @@ def startAccessibility(suite, shard) {
                 } finally {
                     archiveArtifacts 'reports/**'
                     junit 'reports/a11y/xunit.xml'
-                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/pa11ycrawler/html', reportFiles: 'index.html', reportName: 'Accessibility Audit Index', reportTitles: ''])
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'reports/pa11ycrawler/html', reportFiles: 'index.html', reportName: 'Accessibility Audit Index', reportTitles: ''])                 
                     deleteDir()
                 }
             }
@@ -105,7 +105,7 @@ def startBokchoy(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, honorRefspec: true, noTags: true, reference: '', shallow: true, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false,  timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
                         sh './scripts/all-tests.sh'
@@ -128,7 +128,7 @@ def startJavascript(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, honorRefspec: true, noTags: true, reference: '', shallow: true, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     sh """source ./scripts/jenkins-common.sh
                     paver test_js --coverage
@@ -152,7 +152,7 @@ def startLettuce(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, honorRefspec: true, noTags: true, reference: '', shallow: true, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
                         sh './scripts/all-tests.sh'
@@ -162,7 +162,6 @@ def startLettuce(suite, shard) {
                     throw err
                 } finally {
                     archiveArtifacts 'reports/**'
-                    junit 'reports/acceptance/*.xml'
                     deleteDir()
                 }
             }
@@ -175,9 +174,9 @@ def startQuality(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, honorRefspec: true, noTags: true, reference: '', shallow: true, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
-                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
+                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}", "DIFF_TARGET=${diff_target}"]) {
                         sh './scripts/all-tests.sh'
                     }
                 } catch (err) {
@@ -185,8 +184,10 @@ def startQuality(suite, shard) {
                     throw err
                 } finally {
                     archiveArtifacts 'reports/**'
-                    archiveArtifacts 'test_root/**'
-                    /*deleteDir()*/
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_eslint.html', reportName: 'Diff Quality eslint Report', reportTitles: ''])
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_pep8.html', reportName: 'Diff Quality pep8 Report', reportTitles: ''])
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '', reportFiles: 'reports/diff_quality/diff_quality_pylint.html', reportName: 'Diff Quality pylint Report', reportTitles: ''])
+                    deleteDir()
                 }
             }
         }
@@ -198,7 +199,7 @@ def startUnit(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, honorRefspec: true, noTags: true, reference: '', shallow: true, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
                         sh './scripts/all-tests.sh'
@@ -221,7 +222,7 @@ def coverageTest() {
     node("${worker_name}") {
         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
             cleanWs()
-            checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, honorRefspec: true, noTags: true, reference: '', shallow: true, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
+            checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false,  timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
 
             withCredentials([string(credentialsId: "${codecov_credentials_id}", variable: 'CODE_COV_TOKEN')]) {
                 codecov_token = env.CODE_COV_TOKEN
