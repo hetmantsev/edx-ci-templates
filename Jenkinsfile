@@ -2,7 +2,7 @@
 
 worker_name = "worker-1||worker-2||worker-3||worker-4||worker-5||worker-6||worker-7||worker-8||worker-9"
 slack_team_domain = "raccoongang"
-git_credentials_id = "ef2bf63b-753b-40ac-984a-d95b6e63123b"
+git_credentials_id = "590ed00e-924b-4009-9e18-49d7627a2853"
 git_url = "https://github.com/raccoongang/edx-platform"
 slack_credentials_id = "slack-secret-token"
 codecov_credentials_id = "rg-codecov-edx-platform-token"
@@ -83,7 +83,7 @@ def startAccessibility(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 35], [$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '${git_credentials_id}', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: 'https://github.com/raccoongang/edx-platform']]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     sh './scripts/accessibility-tests.sh'
                 } catch (err) {
@@ -104,7 +104,7 @@ def startBokchoy(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 35], [$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '${git_credentials_id}', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: 'https://github.com/raccoongang/edx-platform']]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
                         sh './scripts/all-tests.sh'
@@ -127,7 +127,7 @@ def startJavascript(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 35], [$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '${git_credentials_id}', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: 'https://github.com/raccoongang/edx-platform']]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
                         sh './scripts/all-tests.sh'
@@ -151,7 +151,7 @@ def startLettuce(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 35], [$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '${git_credentials_id}', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: 'https://github.com/raccoongang/edx-platform']]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
                         sh './scripts/all-tests.sh'
@@ -173,7 +173,7 @@ def startQuality(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 35], [$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '${git_credentials_id}', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: 'https://github.com/raccoongang/edx-platform']]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}", "DIFF_TARGET=${diff_target}"]) {
                         sh './scripts/all-tests.sh'
@@ -198,7 +198,7 @@ def startUnit(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 35], [$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '${git_credentials_id}', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: 'https://github.com/raccoongang/edx-platform']]])
+                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
                         sh './scripts/all-tests.sh'
@@ -221,7 +221,7 @@ def coverageTest() {
     node("${worker_name}") {
         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
             cleanWs()
-            checkout([$class: 'GitSCM', branches: [[name: '${sha1}']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CheckoutOption', timeout: 35], [$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: true]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '${git_credentials_id}', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: 'https://github.com/raccoongang/edx-platform']]])
+            checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
 
             withCredentials([string(credentialsId: "${codecov_credentials_id}", variable: 'CODE_COV_TOKEN')]) {
                 codecov_token = env.CODE_COV_TOKEN
