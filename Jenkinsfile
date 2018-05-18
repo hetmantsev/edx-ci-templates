@@ -129,9 +129,9 @@ def startJavascript(suite, shard) {
                 cleanWs()
                 checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
-                    sh """source ./scripts/jenkins-common.sh
-                    paver test_js --coverage
-                    paver diff_coverage -b ${diff_target}"""
+                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}", "TARGET_BRANCH=${diff_target}"]) {
+                        sh './scripts/all-tests.sh'
+                    }
                 } catch (err) {
                     slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
                     throw err
@@ -175,28 +175,9 @@ def startQuality(suite, shard) {
                 cleanWs()
                 checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
-                    sh """
-                    source ./scripts/jenkins-common.sh
-                    echo "Finding fixme's and storing report..."
-                    paver find_fixme > fixme.log || { cat fixme.log; EXIT=1; }
-                    echo "Finding pep8 violations and storing report..."
-                    paver run_pep8 > pep8.log || { cat pep8.log; EXIT=1; }
-                    echo "Finding pylint violations and storing in report..."
-                    paver run_pylint -l $PYLINT_THRESHOLD > pylint.log || { cat pylint.log; EXIT=1; }
-
-                    mkdir -p reports
-
-                    echo "Finding ESLint violations and storing report..."
-                    paver run_eslint -l $ESLINT_THRESHOLD > eslint.log || { cat eslint.log; EXIT=1; }
-                    echo "Running code complexity report (python)."
-                    paver run_complexity || echo "Unable to calculate code complexity. Ignoring error."
-                    echo "Running xss linter report."
-                    paver run_xsslint -t $XSSLINT_THRESHOLDS > xsslint.log || { cat xsslint.log; EXIT=1; }
-                    echo "Running xss commit linter report."
-                    paver run_xsscommitlint > xsscommitlint.log || { cat xsscommitlint.log; EXIT=1; }
-                    echo "Running diff quality."
-                    paver run_quality -p 100 -b ${diff_target} || EXIT=1
-                    """
+                    withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}", "TARGET_BRANCH=${diff_target}"]) {
+                        sh './scripts/all-tests.sh'
+                    }
                 } catch (err) {
                     slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
                     throw err
