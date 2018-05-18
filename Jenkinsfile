@@ -194,7 +194,7 @@ def startQuality(suite, shard) {
                     echo "Running xss commit linter report."
                     paver run_xsscommitlint > xsscommitlint.log || { cat xsscommitlint.log; EXIT=1; }
                     echo "Running diff quality."
-                    paver run_quality -p 100 ${diff_target} || EXIT=1
+                    paver run_quality -p 100 -b ${diff_target} || EXIT=1
                     """
                 } catch (err) {
                     slackSend channel: channel_name, color: 'danger', message: "Test ${suite}-${shard} for ${ghprbPullLink}. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
