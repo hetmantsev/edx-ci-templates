@@ -176,11 +176,6 @@ def startQuality(suite, shard) {
                 checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: true, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: "${git_credentials_id}", url: "${git_url}"]]])
                 try {
                     sh """
-                    export PYLINT_THRESHOLD=3600
-                    export ESLINT_THRESHOLD=10122
-
-                    XSSLINT_THRESHOLDS=`cat scripts/xsslint_thresholds.json`
-                    export XSSLINT_THRESHOLDS=${XSSLINT_THRESHOLDS//[[:space:]]/}
                     source ./scripts/jenkins-common.sh
                     echo "Finding fixme's and storing report..."
                     paver find_fixme > fixme.log || { cat fixme.log; EXIT=1; }
