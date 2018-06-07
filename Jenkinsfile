@@ -246,7 +246,7 @@ def coverageTest() {
                 sh """source ./scripts/jenkins-common.sh
                 paver coverage -b ${diff_target}
                 pip install codecov==2.0.15
-                codecov --token=${codecov_token} --branch=${ghprbSourceBranch} --commit=${ghprbActualCommit} --pr=true"""
+                codecov --token=${codecov_token} --branch=${ghprbSourceBranch} --commit=${sha1} --pr=true"""
             } catch (err) {
                 slackSend channel: channel_name, color: 'danger', message: "Coverage report for ${ghprbPullLink} failed. Please check build info. (<${env.BUILD_URL}|Open>)", teamDomain: "${slack_team_domain}", tokenCredentialId: "${slack_credentials_id}"
                 throw err
