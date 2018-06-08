@@ -240,7 +240,7 @@ def coverageTest() {
             unstash "artifacts-lms-unit-3"
             unstash "artifacts-lms-unit-4"
             unstash "artifacts-cms-unit-all"
-            unstash "artifacts-commonlib-unit-all"
+            /*unstash "artifacts-commonlib-unit-all"*/
             
             try {
                 sh """source ./scripts/jenkins-common.sh
