@@ -83,7 +83,7 @@ def startAccessibility(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${sha1}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: "${git_url}"]]])
 
                 try {
                     sh './scripts/accessibility-tests.sh'
@@ -105,7 +105,7 @@ def startBokchoy(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${sha1}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: "${git_url}"]]])
 
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
@@ -129,7 +129,7 @@ def startJavascript(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${sha1}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: "${git_url}"]]])
 
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}", "TARGET_BRANCH=${diff_target}"]) {
@@ -154,7 +154,7 @@ def startLettuce(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${sha1}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: "${git_url}"]]])
 
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
@@ -177,7 +177,7 @@ def startQuality(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${sha1}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: "${git_url}"]]])
 
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}", "TARGET_BRANCH=${diff_target}"]) {
@@ -203,7 +203,7 @@ def startUnit(suite, shard) {
         node("${worker_name}") {
             wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
                 cleanWs()
-                checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', url: "${git_url}"]]])
+                checkout([$class: 'GitSCM', branches: [[name: "${sha1}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: "${git_url}"]]])
 
                 try {
                     withEnv(["TEST_SUITE=${suite}", "SHARD=${shard}"]) {
@@ -227,7 +227,7 @@ def coverageTest() {
     node("${worker_name}") {
         wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
             cleanWs()
-            checkout([$class: 'GitSCM', branches: [[name: "${ghprbSourceBranch}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', url: "${git_url}"]]])
+            checkout([$class: 'GitSCM', branches: [[name: "${sha1}"]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CloneOption', depth: 0, noTags: false, reference: '', shallow: false, timeout: 35]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '590ed00e-924b-4009-9e18-49d7627a2853', name: 'origin', refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: "${git_url}"]]])
 
 
             withCredentials([string(credentialsId: "${codecov_credentials_id}", variable: 'CODE_COV_TOKEN')]) {
